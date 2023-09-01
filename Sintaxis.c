@@ -31,16 +31,15 @@ Token scan(FILE *input) {
     while (isspace(c)) {
         c = fgetc(input);
     }
-
+    
     // Si se alcanza el fin del archivo (EOF)
     if (c == EOF) {
         token.type = FIN_DE_ARCHIVO;
         strcpy(token.lexeme, "EOF");
         return token;
     }
-
-    // Si el primer carácter es una letra, podría ser un identificador
-    if (isalpha(c)) {
+    
+    if (isalpha(c)) { // Si el primer carácter es una letra, podría ser un identificador
         int i = 0;
         while (isalnum(c)) {
             lexeme[i++] = c;
@@ -48,10 +47,7 @@ Token scan(FILE *input) {
         }
         lexeme[i] = '\0';
         token.type = IDENTIFICADOR;
-    }
-
-    // Si comienza con 0x o 0X, podría ser un valor hexadecimal
-    else if (c == '0') {
+    } else if (c == '0') { // Si comienza con 0x o 0X, podría ser un valor hexadecimal
         int i = 0;
         lexeme[i++] = c;
         c = fgetc(input);
@@ -65,35 +61,27 @@ Token scan(FILE *input) {
             lexeme[i] = '\0';
             token.type = HEXADECIMAL;
         }
-    }
-
-    // Si el primer carácter es un dígito, podria ser un entero o un entero mal formado
-    else if (isdigit(c)) {
+    } else if (isdigit(c)) { // Si el primer carácter es un dígito, podria ser un entero o un entero mal formado
         int i = 0;
         bool tieneLetra = false;
         while (isxdigit(c) || isalpha(c)) {
             if (isalpha(c)) {
                 tieneLetra = true;
-            }
+            } 
             lexeme[i++] = c;
             c = fgetc(input);
-        }
+        }        
         lexeme[i] = '\0';
-
         if (!tieneLetra) {
             token.type = ENTERO;
         } else {
             token.type = ENTERO_MAL_FORMADO;
         }
-    }
-
-    // Si el primer carácter no coincide con ninguna categoría anterior, es un error general
-    else {
+    } else { // Si el primer carácter no coincide con ninguna categoría anterior, es un error general
         lexeme[0] = c;
         lexeme[1] = '\0';
         token.type = ERROR_GENERAL;
     }
-
     strcpy(token.lexeme, lexeme);
     return token;
 }
@@ -123,7 +111,6 @@ int main() {
                 break;
         }
     } while (token.type != FIN_DE_ARCHIVO);
-
     fclose(inputFile);
     fclose(outputFile);
     return 0;
